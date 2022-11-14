@@ -1,70 +1,71 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../Context/AuthProvider';
+import toast from 'react-hot-toast';
 
 const Register = () => {
+
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { createUser, updateUserProfile } = useContext(AuthContext);
+    const [signUpError, setSignUPError] = useState('')
+
+
+    const handleSignUp = (data) => {
+        console.log(data);
+        setSignUPError('');
+        createUser(data.email, data.password)
+            .then(result => {
+                const user = result.user;
+                console.log(user);
+                toast('User Created Successfully.')
+                const userInfo = {
+                    displayName: data.name
+                }
+                updateUserProfile(userInfo)
+                    .then(() => { })
+                    .catch(err => console.log(err));
+            })
+            .catch(error => {
+                console.log(error)
+                setSignUPError(error.message)
+            });
+    }
     return (
-        <div>
-            <div className="hero bg-base-200 p-10">
-
-                <form className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                    <div className="card-body">
-                        <div className="form-control">
-                            <h1 className="text-4xl font-bold">Register now!</h1>
-                            <label className="label">
-                                <span className="label-text font-medium">Name</span>
-                            </label>
-                            <input type="text" name='name' placeholder="Name" className="input input-bordered" />
-                        </div>
-                        <div className="form-control">
-
-                            <label className="label">
-                                <span className="label-text font-medium">Photo URL</span>
-                            </label>
-                            <input type="text" name='photo' placeholder="PhotURL" className="input input-bordered" />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-medium">Email</span>
-                            </label>
-                            <input type="email" placeholder="Email" name='email' className="input input-bordered" />
-
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-medium">Password</span>
-                            </label>
-                            <input type="password" placeholder="Password" name='password' className="input input-bordered" />
-
-                        </div>
-                        <p className='text-red-700'></p>
-                        <div className="form-control mt-6">
-                            <button className="btn bg-red-600 border-0 hover:bg-red-500 ">Register</button>
-                            <p className='mt-2 text-[15px] font-medium'>or Register With</p>
-                        </div>
-
-                        <div className="avatar gap-4 flex justify-center cursor-pointer">
-
-                            <div className="w-9 h-9 rounded-full">
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK5q0FP74VV9wbfwP378_7kj7iDomHuKrxkXsxDdUT28V9dlVMNUe-EMzaLwaFhneeuZI&usqp=CAU" alt='' />
-                            </div>
-                            <div className="w-9 h-9 rounded-full">
-                                <img className=''
-                                    src="https://www.pngitem.com/pimgs/m/0-6762_circle-fb-logo-icon-photos-facebook-circle-fb.png" alt='' />
-                            </div>
-                            <div className="w-9 h-9 rounded-full">
-                                <img className=''
-                                    src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt='' />
-                            </div>
-
-                        </div>
-
-                        <div className='mt-2 text-[15px] font-medium'>
-                            <p>Already have an Account! <Link to='/login'><span className='text-red-600'>Login</span></Link></p>
-                        </div>
-
+        <div className='h-[800px] flex justify-center items-center'>
+            <div className='w-96 p-7'>
+                <h2 className='text-xl text-center'>Sign Up</h2>
+                <form onSubmit={handleSubmit(handleSignUp)}>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label"> <span className="label-text">Name</span></label>
+                        <input type="text" {...register("name", {
+                            required: "Name is Required"
+                        })} className="input input-bordered w-full max-w-xs" />
+                        {errors.name && <p className='text-red-500'>{errors.name.message}</p>}
                     </div>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label"> <span className="label-text">Email</span></label>
+                        <input type="email" {...register("email", {
+                            required: true
+                        })} className="input input-bordered w-full max-w-xs" />
+                        {errors.email && <p className='text-red-500'>{errors.email.message}</p>}
+                    </div>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label"> <span className="label-text">Password</span></label>
+                        <input type="password" {...register("password", {
+                            required: "Password is required",
+                            minLength: { value: 6, message: "Password must be 6 characters long" },
+                            pattern: { value: /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])/, message: 'Password must have uppercase, number and special characters' }
+                        })} className="input input-bordered w-full max-w-xs" />
+                        {errors.password && <p className='text-red-500'>{errors.password.message}</p>}
+                    </div>
+                    <input className='btn btn-accent w-full mt-4' value="Sign Up" type="submit" />
+                    {signUpError && <p className='text-red-600'>{signUpError}</p>}
                 </form>
+                <p>Already have an account <Link className='text-secondary' to="/login">Please Login</Link></p>
+                <div className="divider">OR</div>
+                <button className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
+
             </div>
         </div>
     );

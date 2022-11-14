@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../../Context/AuthProvider';
 
 const Nav = () => {
+
+    const { user, logOut } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logOut()
+            .then()
+            .catch()
+    }
     return (
         <div className="navbar bg-base-100 flex justify-between px-10">
             <div className="navbar-start">
@@ -13,9 +22,15 @@ const Nav = () => {
                         <li><Link to='/'>Home</Link></li>
                         <li><Link to='/'>About</Link></li>
                         <li><Link to='/appointment'>Appointment</Link></li>
-                        <li><Link to='/'>Reviews</Link></li>
+
                         <li><Link to='/'>Contact Us</Link></li>
-                        <li><Link to='/'>Login</Link></li>
+                        {user?.uid ?
+                            <>
+                                <li><Link to='/dashBoard'>DashBoard</Link></li>
+                                <li onClick={handleLogout}><Link to=''>Logout</Link></li>
+                            </>
+                            :
+                            <li><Link to='/login'>Login</Link></li>}
                     </ul>
                 </div>
                 <Link to='/' className="btn btn-ghost normal-case text-xl">Doctor's Man</Link>
@@ -25,9 +40,15 @@ const Nav = () => {
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/'>About</Link></li>
                     <li><Link to='/appointment'>Appointment</Link></li>
-                    <li><Link to='/'>Reviews</Link></li>
+
                     <li><Link to='/'>Contact Us</Link></li>
-                    <li><Link to='/login'>Login</Link></li>
+                    {user?.uid ?
+                        <>
+                            <li><Link to='/dashBoard'>DashBoard</Link></li>
+                            <li onClick={handleLogout}><Link to=''>Logout</Link></li>
+                        </>
+                        :
+                        <li><Link to='/login'>Login</Link></li>}
                 </ul>
             </div>
 

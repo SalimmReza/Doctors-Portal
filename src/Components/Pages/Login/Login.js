@@ -1,61 +1,65 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../Context/AuthProvider';
 
 const Login = () => {
+    const { register, formState: { errors }, handleSubmit } = useForm();
+    const { loginIn } = useContext(AuthContext);
+    const [loginError, setLoginError] = useState('');
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const from = location.state?.from?.pathname || '/';
+
+    const handleLogin = data => {
+        console.log(data);
+        setLoginError('');
+        loginIn(data.email, data.password)
+            .then(result => {
+                const user = result.user;
+                console.log(user);
+                navigate(from, { replace: true });
+            })
+            .catch(error => {
+                console.log(error.message)
+                setLoginError(error.message);
+            });
+    }
     return (
-        <div>
-            <div className="hero bg-base-200 p-10">
-                <form className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                    <div className="card-body">
-                        <div className="form-control">
-                            <h1 className="text-4xl font-bold">Login now!</h1>
-                            <label className="label">
-                                <span className="label-text font-medium">Email</span>
-                            </label>
-                            <input type="email" name='email' placeholder="Email" className="input input-bordered" />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-medium">Password</span>
-                            </label>
-                            <input type="password" name='password' placeholder="password" className="input input-bordered" />
-                            <label className="label">
-                                <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-                            </label>
-                        </div>
-                        <p className='text-red-700'></p>
-                        <div className="form-control mt-6">
-                            <button className="btn bg-red-600 border-0 hover:bg-red-500 ">Login</button>
-
-                            <p className='mt-2 text-[15px] font-medium'>or Register With</p>
-                        </div>
-
-                        <div className="avatar gap-4 flex justify-center cursor-pointer">
-
-                            <div className="w-9 h-9 rounded-full">
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK5q0FP74VV9wbfwP378_7kj7iDomHuKrxkXsxDdUT28V9dlVMNUe-EMzaLwaFhneeuZI&usqp=CAU" alt='' />
-                            </div>
-                            <div
-                                className="w-9 h-9 rounded-full">
-                                <img className=''
-                                    src="https://www.pngitem.com/pimgs/m/0-6762_circle-fb-logo-icon-photos-facebook-circle-fb.png" alt='' />
-                            </div>
-                            <div className="w-9 h-9 rounded-full">
-                                <img className=''
-                                    src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt='' />
-                            </div>
-
-                        </div>
-
-                        <div className='mt-2 text-[15px] font-medium'>
-                            <p>Don't have an Account!<Link
-                                to='/register'><span className='text-red-600'>Register</span></Link></p>
-                        </div>
-
+        <div className='h-[800px] flex justify-center items-center'>
+            <div className='w-96 p-7'>
+                <h2 className='text-xl font-bold text-center'>Login</h2>
+                <form onSubmit={handleSubmit(handleLogin)}>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label"> <span className="label-text">Email</span></label>
+                        <input type="text"
+                            {...register("email", {
+                                required: "Email Address is required"
+                            })}
+                            className="input input-bordered w-full max-w-xs" />
+                        {errors.email && <p className='text-red-600'>{errors.email?.message}</p>}
+                    </div>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label"> <span className="label-text">Password</span></label>
+                        <input type="password"
+                            {...register("password", {
+                                required: "Password is required",
+                                minLength: { value: 6, message: 'Password must be 6 characters or longer' }
+                            })}
+                            className="input input-bordered w-full max-w-xs" />
+                        {errors.password && <p className='text-red-600'>{errors.password?.message}</p>}
+                        <label className="label"> <span className="label-text">Forget Password?</span></label>
 
                     </div>
+                    <input className='btn btn-secondary w-full' value="Login" type="submit" />
+                    <div>
+                        {loginError && <p className='text-red-600'>{loginError}</p>}
+                    </div>
                 </form>
+                <p>New to Doctors Portal <Link className='text-secondary' to="/register">Create new Account</Link></p>
+                <div className="divider">OR</div>
+                <button className='btn btn-outline w-full hover:bg-secondary'>CONTINUE WITH GOOGLE</button>
             </div>
         </div>
     );
