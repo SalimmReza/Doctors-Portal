@@ -2,17 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import AvailableAppointmentOptions from '../AvailableAppointmentOptions/AvailableAppointmentOptions';
 import AppointmentModal from '../AppointmentBanner/AppointmentModal/AppointmentModal';
+import { useQuery } from '@tanstack/react-query';
+import Spinner from '../../SharedPage/Loading/Spinner';
+
 
 
 const AvailableAppointment = ({ selected }) => {
-    const [appointmentOptions, setAppointmentOptions] = useState([]);
+    // const [appointmentOptions, setAppointmentOptions] = useState([]);
     const [treatment, setTreatment] = useState(null);
-
-    useEffect(() => {
-        fetch('appointment.json')
+    const date = format(selected, 'PP');
+    const { data: appointmentOptions = [], refetch, isLoading } = useQuery({
+        queryKey: ['appointmentOptions', date],
+        queryFn: () => fetch(`http://localhost:5000/appointmentOptions?date=${date}`)
             .then(res => res.json())
-            .then(data => setAppointmentOptions(data))
-    }, [])
+
+    })
+
+    if (isLoading) {
+        return <Spinner></Spinner>
+    }
+
+    // useEffect(() => {
+    //     fetch('http://localhost:5000/appointmentOptions')
+    //         .then(res => res.json())
+    //         .then(data => setAppointmentOptions(data))
+    // }, [])
 
     return (
         <div className='my-10 w-[80%] mx-auto '>
@@ -32,6 +46,7 @@ const AvailableAppointment = ({ selected }) => {
                     selected={selected}
                     treatment={treatment}
                     setTreatment={setTreatment}
+                    refetch={refetch}
                 ></AppointmentModal>
             }
 
