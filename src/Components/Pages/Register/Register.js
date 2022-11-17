@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../Context/AuthProvider';
 import toast from 'react-hot-toast';
+import useToken from '../../../Hooks/useToken';
 
 const Register = () => {
 
@@ -10,8 +11,16 @@ const Register = () => {
     const { createUser, updateUserProfile } = useContext(AuthContext);
     const [signUpError, setSignUPError] = useState('')
 
+    //jwt work
+    const [createdUserEmail, setCreatedUserEmail] = useState('')
+    const [token] = useToken(createdUserEmail);
+
     const location = useLocation();
     const navigate = useNavigate();
+
+    if (token) {
+        navigate('/');
+    }
 
     const from = location.state?.from?.pathname || '/';
 
@@ -29,7 +38,9 @@ const Register = () => {
                     displayName: data.name
                 }
                 updateUserProfile(userInfo)
-                    .then(() => { navigate('/') })
+                    .then(() => {
+                        sendUserDataInDB(data.name, data.email);
+                    })
                     .catch(err => console.log(err));
 
             })
@@ -38,6 +49,29 @@ const Register = () => {
                 setSignUPError(error.message)
             });
     }
+
+    const sendUserDataInDB = (name, email) => {
+        const user = { name, email };
+        fetch(`http://localhost:5000/users`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                setCreatedUserEmail(email);
+
+            })
+
+    }
+
+
+
+
     return (
         <div className='h-[800px] flex justify-center items-center'>
             <div className='w-96 p-7'>
