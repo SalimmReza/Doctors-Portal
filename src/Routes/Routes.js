@@ -9,6 +9,7 @@ import Register from "../Components/Pages/Register/Register";
 import Nav from "../Components/Pages/SharedPage/Nav/Nav";
 import DashBoardLayout from "../Layout/DashBoardLayout";
 import Main from "../Layout/Main";
+import AdminRoute from "./AdminRoutes";
 import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
@@ -47,7 +48,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: '/dashBoard/allUsers',
-                element: <AllUsers />
+                element: <AdminRoute><AllUsers /></AdminRoute>
 
             }
         ]

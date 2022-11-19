@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import Nav from '../Components/Pages/SharedPage/Nav/Nav';
+import { AuthContext } from '../Context/AuthProvider';
+import useAdmin from '../Hooks/Admin';
 
 const DashBoardLayout = () => {
+    const { user } = useContext(AuthContext);
+    const [isAdmin] = useAdmin(user?.email)
     return (
         <div>
             <Nav></Nav>
@@ -16,8 +20,11 @@ const DashBoardLayout = () => {
                     <ul className="menu p-4 w-80 bg-base-100 text-base-content">
 
                         <li><Link to='/dashboard'>My Applications</Link></li>
-                        <li><Link to='/dashBoard/allUsers'>All Users</Link></li>
+                        {
+                            isAdmin &&
+                            <><li><Link to='/dashBoard/allUsers'>All Users</Link></li></>
 
+                        }
                     </ul>
 
                 </div>

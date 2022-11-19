@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import toast from 'react-hot-toast';
 
 const AllUsers = () => {
-    const { data: users = [] } = useQuery({
+    const { data: users = [], refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
             const res = await fetch(`http://localhost:5000/users`);
@@ -11,6 +12,24 @@ const AllUsers = () => {
 
         }
     })
+
+    const handleAdmin = (id) => {
+        fetch(`http://localhost:5000/users/admin/${id}`, {
+            method: 'PUT',
+            headers: {
+                authorization: `bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.acknowledged) {
+                    refetch()
+                    toast.success('You made a new admin')
+
+                }
+            })
+    }
     return (
         <div>
             <h1>All users</h1>
@@ -22,6 +41,8 @@ const AllUsers = () => {
                             <th></th>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Make Admin</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,6 +52,12 @@ const AllUsers = () => {
                                 <th>{i + 1}</th>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
+                                <td> {user?.role ? "" : <button
+                                    onClick={() => handleAdmin(user._id)}
+                                    className='btn bg-primary'>Make Admin</button>} </td>
+                                <td> <button className='btn bg-red-500'>Delete</button> </td>
+
+
 
                             </tr>)
                         }
@@ -39,7 +66,7 @@ const AllUsers = () => {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 };
 
