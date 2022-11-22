@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../../../Context/AuthProvider';
 import Spinner from '../../../SharedPage/Loading/Spinner';
 
 const AddDoctor = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-
     const imageHostKey = process.env.REACT_APP_IMG_API_KEY
 
 
@@ -101,7 +101,12 @@ const AddDoctor = () => {
                         })} className="input input-bordered w-full max-w-xs" />
                         {errors.img && <p className='text-red-500'>{errors.img.message}</p>}
                     </div>
-                    <input className='btn btn-accent w-full mt-4' value="Add Doctor" type="submit" />
+                    {
+                        isLoading ? <Spinner></Spinner>
+                            :
+                            <input className='btn btn-accent w-full mt-4' value="Add Doctor" type="submit" />
+                    }
+
                 </form>
             </div>
         </div>

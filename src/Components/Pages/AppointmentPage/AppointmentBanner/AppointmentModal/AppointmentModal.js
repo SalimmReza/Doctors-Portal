@@ -5,7 +5,7 @@ import { AuthContext } from '../../../../../Context/AuthProvider';
 import toast, { Toaster } from 'react-hot-toast';
 
 const AppointmentModal = ({ treatment, setTreatment, selected, refetch }) => {
-    const { name: treatmentName, slots } = treatment; //treatment is appointment options
+    const { name: treatmentName, slots, price } = treatment; //treatment is appointment options
     console.log("slots", slots);
     const date = format(selected, 'PP')
 
@@ -28,6 +28,7 @@ const AppointmentModal = ({ treatment, setTreatment, selected, refetch }) => {
             slot,
             email,
             phone,
+            price
         }
 
 
@@ -81,10 +82,16 @@ const AppointmentModal = ({ treatment, setTreatment, selected, refetch }) => {
                                 >{slot}</option>)
                             }
                         </select>
-                        <input type="text" name='name' defaultValue={user.displayName} placeholder="Type Name" className="input input-bordered w-full " />
-                        <input type="text" defaultValue={user.email} name='email' placeholder="Type Email" className="input input-bordered w-full" disabled />
+                        <input type="text" name='name' defaultValue={user?.displayName} placeholder="Type Name" className="input input-bordered w-full " />
+                        <input type="text" defaultValue={user?.email} name='email' placeholder="Type Email" className="input input-bordered w-full" disabled />
                         <input type="text" name='phone' placeholder="Type Phone" className="input input-bordered w-full " required /> <br />
-                        <button className="btn btn-active btn-secondary w-full ">Submit</button>
+
+                        {
+                            user?.uid ? <button className="btn btn-active btn-secondary w-full ">Submit</button>
+                                :
+                                <h1>login</h1>
+                        }
+
                     </form>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import { async } from '@firebase/util';
 import { useQuery } from '@tanstack/react-query';
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../../../Context/AuthProvider';
 
 const MyAppointments = () => {
@@ -35,20 +36,35 @@ const MyAppointments = () => {
                             <th>Treatment</th>
                             <th>Time</th>
                             <th>Date</th>
+                            <th>Payment</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            bookings.map((booking, i) => <tr
-                                key={booking._id}
-                            >
+                            bookings &&
+                            bookings?.map((booking, i) => <tr key={booking._id}>
                                 <th>{i + 1}</th>
                                 <td>{booking.patient}</td>
                                 <td>{booking.treatment}</td>
-                                <td>{booking.slot}</td>
                                 <td>{booking.appointmentDate}</td>
+                                <td>{booking.slot}</td>
+                                <td>
+                                    {
+                                        booking.price && !booking.paid && <Link
+                                            to={`/dashBoard/payment/${booking._id}`}
+                                        >
+                                            <button
+                                                className='btn btn-primary btn-sm'
+                                            >Pay</button>
+                                        </Link>
+                                    }
+                                    {
+                                        booking.price && booking.paid && <span className='text-green-500'>Paid</span>
+                                    }
+                                </td>
                             </tr>)
                         }
+
 
 
 
@@ -57,7 +73,7 @@ const MyAppointments = () => {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 };
 
